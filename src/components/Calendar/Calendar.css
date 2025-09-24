@@ -1,0 +1,99 @@
+.calendar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.fc-daygrid-day-frame {
+  padding: 0 !important;
+  width: 100%;
+  height: 100%;
+}
+
+.fc-daygrid-day-number {
+  display: block;
+  text-align: center;
+  margin: 0 auto;
+  font-weight: bold;
+}
+
+.day-cell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.day-number {
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.day-number.left-align {
+  margin-right: 0;
+  text-align: left;
+  flex-shrink: unset;
+  min-width: unset;
+}
+
+.add-icon {
+  position: static;
+  top: unset;
+  right: unset;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #007bff;
+  z-index: unset;
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.3); /* Optional: dark overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.add-event-popup-content {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  padding: 24px;
+  min-width: 600px;
+  width: 600px;
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+}
+
+.event-list {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.calendar-event {
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 12px;
+  margin-top: 2px;
+  word-break: break-word;
+}
+
+
+
