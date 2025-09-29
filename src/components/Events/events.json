@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Team Meeting",
+    "date": "2025-09-25",
+    "fromTime": "10:00",
+    "toTime": "11:00",
+    "description": "Monthly team sync-up.",
+    "attendees": ["Alice", "Bob", "Charlie"]
+  },
+  {
+    "title": "Project Deadline",
+    "date": "2025-09-28",
+    "fromTime": "09:00",
+    "toTime": "17:00",
+    "description": "Final submission for Q3 project.",
+    "attendees": ["Project Team"]
+  },
+  {
+    "title": "Client Call",
+    "date": "2025-09-30",
+    "fromTime": "15:00",
+    "toTime": "16:00",
+    "description": "Discuss requirements with client.",
+    "attendees": ["Alice", "Client"]
+  }
+]
