@@ -6,7 +6,7 @@ import DeleteEvent from '../Events/DeleteEvent';
 describe('DeleteEvent', () => {
   it('calls onDelete when delete button is clicked and confirmed', () => {
     const onDelete = jest.fn();
-    window.confirm = jest.fn(() => true); // mock confirm to always return true
+    window.confirm = jest.fn(() => true); //mock confirm true
     render(<DeleteEvent eventData={{ title: 'Test' }} onDelete={onDelete} />);
     fireEvent.click(screen.getByText(/delete/i));
     expect(onDelete).toHaveBeenCalled();
@@ -14,7 +14,7 @@ describe('DeleteEvent', () => {
 
   it('does not call onDelete if not confirmed', () => {
     const onDelete = jest.fn();
-    window.confirm = jest.fn(() => false); // mock confirm to return false
+    window.confirm = jest.fn(() => false); //mock confirm false
     render(<DeleteEvent eventData={{ title: 'Test' }} onDelete={onDelete} />);
     fireEvent.click(screen.getByText(/delete/i));
     expect(onDelete).not.toHaveBeenCalled();
