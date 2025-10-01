@@ -8,6 +8,23 @@ import AddEvent from '../Events/AddEvent';
 import EditEvent from '../Events/EditEvent';
 
 const Calendar = () => {
+  // Delete event handler
+  const handleDeleteEvent = (eventData) => {
+    // Remove event by matching unique fields
+    const filteredEvents = events.filter(ev =>
+      !(
+        ev.title === eventData.title &&
+        String(ev.date) === String(eventData.date) &&
+        ev.fromTime === eventData.fromTime &&
+        ev.toTime === eventData.toTime
+      )
+    );
+    setEvents(filteredEvents);
+    localStorage.setItem('calendar_events', JSON.stringify(filteredEvents));
+    setShowPopup(false);
+    setSelectedEvent(null);
+    setEditMode(false);
+  };
   const [showPopup, setShowPopup] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -44,31 +61,32 @@ const Calendar = () => {
   useEffect(() => {
     const stored = localStorage.getItem('calendar_events');
     if (stored) {
-      setEvents(JSON.parse(stored).map(ev => ({ ...ev, date: new Date(ev.date) })));
+      setEvents(JSON.parse(stored));
     } else {
-      setEvents(defaultEvents.map(ev => ({ ...ev, date: new Date(ev.date) })));
+      setEvents(defaultEvents);
     }
   }, []);
   const [editMode, setEditMode] = useState(false);
 
-  // No need to fetch events.json, events are imported as a module
 
   const handleAddEvent = (date) => {
-    setSelectedDate(date);
+    // Format date as 'YYYY-MM-DD' in local time to avoid timezone issues
+    const dateStr = date instanceof Date
+      ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+      : date;
+    setSelectedDate(dateStr);
     setSelectedEvent(null);
     setEditMode(false);
     setShowPopup(true);
   };
 
-  // FullCalendar passes an EventApi object to eventClick, not your raw event
   const handleEventClick = (arg) => {
-    // If arg has .event, it's a FullCalendar eventClick
     const fcEvent = arg.event;
     if (fcEvent) {
-      // Get extendedProps and other fields
       const eventData = {
         title: fcEvent.title,
-        date: fcEvent.start,
+        // Always use YYYY-MM-DD string for date
+        date: fcEvent.startStr,
         fromTime: fcEvent.extendedProps.fromTime || '',
         toTime: fcEvent.extendedProps.toTime || '',
         description: fcEvent.extendedProps.description || '',
@@ -76,7 +94,6 @@ const Calendar = () => {
       };
       setSelectedEvent(eventData);
     } else {
-      // Fallback for manual event click (shouldn't happen)
       setSelectedEvent(arg);
     }
     setEditMode(true);
@@ -84,18 +101,25 @@ const Calendar = () => {
   };
 
   const handleSaveEvent = (eventData) => {
+    // Always store date as YYYY-MM-DD string
+    const eventToSave = { ...eventData, date: typeof eventData.date === 'string' ? eventData.date : (eventData.date instanceof Date ? eventData.date.toISOString().slice(0, 10) : String(eventData.date)) };
     let updatedEvents;
     if (editMode && selectedEvent) {
-      // Update event
-      updatedEvents = events.map(ev =>
-        ev === selectedEvent ? { ...eventData } : ev
-      );
+      updatedEvents = events.map(ev => {
+        if (
+          ev.title === selectedEvent.title &&
+          String(ev.date) === String(selectedEvent.date) &&
+          ev.fromTime === selectedEvent.fromTime &&
+          ev.toTime === selectedEvent.toTime
+        ) {
+          return { ...eventToSave };
+        }
+        return ev;
+      });
     } else {
-      // Add new event
-      updatedEvents = [...events, eventData];
+      updatedEvents = [...events, eventToSave];
     }
     setEvents(updatedEvents);
-    // Save to localStorage
     localStorage.setItem('calendar_events', JSON.stringify(updatedEvents));
     setShowPopup(false);
     setSelectedEvent(null);
@@ -116,7 +140,7 @@ const Calendar = () => {
         editable={true}
         events={events.map(ev => ({
           title: ev.title,
-          start: ev.date,
+          start: ev.date, // always a YYYY-MM-DD string
           fromTime: ev.fromTime,
           toTime: ev.toTime,
           description: ev.description,
@@ -141,6 +165,7 @@ const Calendar = () => {
                 setEditMode(false);
               }}
               onSave={handleSaveEvent}
+              onDelete={handleDeleteEvent}
             />
           ) : (
             <AddEvent

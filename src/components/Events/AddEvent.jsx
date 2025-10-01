@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './AddEvent.css'; // Optional: for custom styles
+import './AddEvent.css';
 
 const AddEvent = ({ selectedDate, onClose, onSave }) => {
   const [title, setTitle] = useState('');
@@ -22,9 +22,22 @@ const AddEvent = ({ selectedDate, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Always save date as 'YYYY-MM-DD' string to avoid timezone issues
+    let dateStr = selectedDate;
+    if (selectedDate instanceof Date) {
+      dateStr = selectedDate.toISOString().slice(0, 10);
+    } else if (typeof selectedDate === 'string') {
+      // If string but not in YYYY-MM-DD, try to parse and convert
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) {
+        const d = new Date(selectedDate);
+        if (!isNaN(d)) {
+          dateStr = d.toISOString().slice(0, 10);
+        }
+      }
+    }
     onSave({
       title,
-      date: selectedDate,
+      date: dateStr,
       fromTime,
       toTime,
       description,
@@ -34,26 +47,42 @@ const AddEvent = ({ selectedDate, onClose, onSave }) => {
   };
 
   return (
-    <form className="add-event-popup-content" onSubmit={handleSubmit}>
+  <form className="add-event-popup-content" onSubmit={handleSubmit} data-testid="add-event-form">
       {/* Left: Event Fields */}
       <div className="add-event-left">
         <div>
-          <label>Title:</label>
-          <input type="text" value={title} onChange={e => setTitle(e.target.value)} required />
+          <label htmlFor="title">Title:</label>
+          <input id="title" type="text" value={title} onChange={e => setTitle(e.target.value)} required />
         </div>
         <div>
-          <label>Date:</label>
-          <input type="text" value={selectedDate ? selectedDate.toDateString() : ''} readOnly />
+          <label htmlFor="date">Date:</label>
+          <input
+            id="date"
+            type="text"
+            value={
+              selectedDate
+                ? (selectedDate instanceof Date
+                    ? selectedDate.toDateString()
+                    : (() => {
+                        // If string in YYYY-MM-DD, format as readable
+                        const d = new Date(selectedDate);
+                        return isNaN(d) ? selectedDate : d.toDateString();
+                      })()
+                  )
+                : ''
+            }
+            readOnly
+          />
         </div>
         <div>
-          <label>From:</label>
-          <input type="time" value={fromTime} onChange={e => setFromTime(e.target.value)} required />
-          <label style={{ marginLeft: '10px' }}>To:</label>
-          <input type="time" value={toTime} onChange={e => setToTime(e.target.value)} required />
+          <label htmlFor="fromTime">From:</label>
+          <input id="fromTime" type="time" value={fromTime} onChange={e => setFromTime(e.target.value)} required />
+          <label htmlFor="toTime" style={{ marginLeft: '10px' }}>To:</label>
+          <input id="toTime" type="time" value={toTime} onChange={e => setToTime(e.target.value)} required />
         </div>
         <div>
-          <label>Description:</label>
-          <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} />
+          <label htmlFor="description">Description:</label>
+          <textarea id="description" value={description} onChange={e => setDescription(e.target.value)} rows={3} />
         </div>
       </div>
       {/* Right: Attendees */}

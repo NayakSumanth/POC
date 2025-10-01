@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './AddEvent.css';
+import DeleteEvent from './DeleteEvent';
 
-const EditEvent = ({ eventData, onClose, onSave }) => {
+const EditEvent = ({ eventData, onClose, onSave, onDelete }) => {
   const [title, setTitle] = useState('');
   const [fromTime, setFromTime] = useState('');
   const [toTime, setToTime] = useState('');
@@ -46,26 +47,26 @@ const EditEvent = ({ eventData, onClose, onSave }) => {
   };
 
   return (
-    <form className="add-event-popup-content" onSubmit={handleSubmit}>
+  <form className="add-event-popup-content" onSubmit={handleSubmit} data-testid="edit-event-form">
       {/* Left: Event Fields */}
       <div className="add-event-left">
         <div>
-          <label>Title:</label>
-          <input type="text" value={title} onChange={e => setTitle(e.target.value)} required />
+          <label htmlFor="edit-title">Title:</label>
+          <input id="edit-title" type="text" value={title} onChange={e => setTitle(e.target.value)} required />
         </div>
         <div>
-          <label>Date:</label>
-          <input type="text" value={date} readOnly />
+          <label htmlFor="edit-date">Date:</label>
+          <input id="edit-date" type="text" value={date} readOnly />
         </div>
         <div>
-          <label>From:</label>
-          <input type="time" value={fromTime} onChange={e => setFromTime(e.target.value)} required />
-          <label style={{ marginLeft: '10px' }}>To:</label>
-          <input type="time" value={toTime} onChange={e => setToTime(e.target.value)} required />
+          <label htmlFor="edit-fromTime">From:</label>
+          <input id="edit-fromTime" type="time" value={fromTime} onChange={e => setFromTime(e.target.value)} required />
+          <label htmlFor="edit-toTime" style={{ marginLeft: '10px' }}>To:</label>
+          <input id="edit-toTime" type="time" value={toTime} onChange={e => setToTime(e.target.value)} required />
         </div>
         <div>
-          <label>Description:</label>
-          <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} />
+          <label htmlFor="edit-description">Description:</label>
+          <textarea id="edit-description" value={description} onChange={e => setDescription(e.target.value)} rows={3} />
         </div>
       </div>
       {/* Right: Attendees */}
@@ -91,9 +92,10 @@ const EditEvent = ({ eventData, onClose, onSave }) => {
             </li>
           ))}
         </ul>
-        <div style={{ marginTop: 'auto' }}>
+        <div style={{ marginTop: 'auto', display: 'flex', gap: 8 }}>
           <button type="submit">Update</button>
-          <button type="button" onClick={onClose} style={{ marginLeft: 8 }}>Cancel</button>
+          <button type="button" onClick={onClose}>Cancel</button>
+          <DeleteEvent eventData={eventData} onDelete={onDelete} />
         </div>
       </div>
     </form>
